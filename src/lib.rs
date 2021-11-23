@@ -21,7 +21,7 @@ The Proof of message equality is obtained by applying the Fiat--Shamir transform
 =================================================================================================
 Offline phase:
 1. Prover computes 
-    C_1 := PedersenCOMM(a; r1) = a * G + r2 * H
+    C_1 := PedersenCOMM(a; r1) = a * G + r1 * H
     C_2 := PedersenCOMM(a; r2) = a * G + r2 * H
 
     where G and H are generators of the group, and r1 and r2 are random field elements.
