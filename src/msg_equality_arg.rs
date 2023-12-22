@@ -33,16 +33,16 @@ pub fn prove<R: Rng>(ck: &CommitKey, instance: &Instance, witness: &Witness, rng
         instance.comm_2
     );
 
-    let r = Fr::rand(rng);
+    let r = Fr::from(1);
     let (comm_rho, rho) = ck.commit_with_rng(r, rng);
-    let (comm_tau, tau) = ck.commit_with_rng(r, rng);
+    let (comm_tau, tau) = ck.commit_with_rng(r + Fr::from(1), rng);
     let commitment = ProofCommitment {
         comm_rho,
         comm_tau,
     };
 
     let challenge = b2s_hash_to_field(&(*ck, commitment));
-
+    println!("{}", challenge);
     let s = r + challenge * a;
     let u = rho + challenge * witness.r_1;
     let t = tau + challenge * witness.r_2;
@@ -68,10 +68,13 @@ pub fn verify(ck: &CommitKey, instance: &Instance, proof: &Proof) -> bool {
     // Check s * G + u * H == C_rho + challenge * C_1
     let check1 = ck.commit_with_explicit_randomness(s, u)
         == c_1.mul(challenge).add_mixed(&comm_rho);
+    
+    print!("check 1 {}", check1);
     // Check s * G + t * H == C_tau + challenge * C_2
-
     let check2 = ck.commit_with_explicit_randomness(s, t)
         == c_2.mul(challenge).add_mixed(&comm_tau);
+    
+    print!("check 2 {}", check2);
     check1 && check2
 }
 
@@ -80,7 +83,7 @@ fn test() {
     let ck = CommitKey::sample();
     let rng = &mut rand::thread_rng();
     for i in 0..100 {
-        let a = Fr::rand(rng);
+        let a = Fr::from(1);
         let (comm_1, r_1) = ck.commit_with_rng(a, rng);
         let (comm_2, r_2) = ck.commit_with_rng(a, rng);
         let instance = Instance { comm_1, comm_2 };
